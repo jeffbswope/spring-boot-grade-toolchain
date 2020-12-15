@@ -6,7 +6,27 @@ plugins {
 
 group = 'org.github.jeffbswope'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(15)
+	}
+}
+
+// toolchain not automatically applied to BootRun task by default
+// this seems by design that it will:
+// "Setup all compile, test and javadoc tasks to use the defined toolchain which may be different than the one Gradle itself uses"
+// https://docs.gradle.org/current/userguide/toolchains.html
+//
+// Without reference to JavaExec, which I guess are intended to be set manually.
+//
+// In any case, with this block commented-out, we get an error on bootRun related to trying to run the
+// Java 15-compiled code with Gradle's Java 8.
+bootRun {
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(15)
+	}
+}
 
 repositories {
 	mavenCentral()
